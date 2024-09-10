@@ -4,53 +4,10 @@ import { TextInput, NativeSelect, SimpleGrid, Accordion, ScrollArea, Card, Input
 import map from './assets/map.png'
 import login from "./assets/login.png"
 
-//import './App.css'
 
+const apiUrl = "https://cosmos-odyssey.azurewebsites.net/api/v1.0/TravelPrices"
 
 function App() {
-
-  const apiUrl = "https://cosmos-odyssey.azurewebsites.net/api/v1.0/TravelPrices"
-  /*
-    async function pullJson() {
-      try {
-        let response = await fetch(apiUrl, {
-  
-          mode: 'no-cors'
-        });
-        let responseJson = await response.json();
-        return responseJson.TravelPrices;
-      } catch (error) {
-        console.error(error);
-      }
-  
-  
-    }
-  */
-
-/*
-  function pullJson() {
-    fetch(apiUrl, {
-      mode: "no-cors",
-      credentials: "include"
-    })
-      .then(response => response.json())
-      .then(responseData => {
-        console.log(responseData)
-      })
-  }
-  useEffect(() => {
-    pullJson()
-  }, [])
-*/
-/*
-  const fetchData = async () => {
-    const response = await fetch(apiUrl);
-    const data = await response.json();
-    console.log(data)
-  }
-  fetchData();
-*/
-  
 
   const [providers, setProviders] = useState([
     {
