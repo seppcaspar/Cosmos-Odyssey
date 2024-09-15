@@ -3,13 +3,44 @@ import '@mantine/core/styles.css';
 import { TextInput, NativeSelect, SimpleGrid, Accordion, ScrollArea, Card, Input, Text, Flex, Grid, Image, Box, Group, Button } from '@mantine/core';
 import map from './assets/map.png'
 import login from "./assets/login.png"
+import { useForm } from '@mantine/form';
 
 
 const apiUrl = "https://cosmos-odyssey.azurewebsites.net/api/v1.0/TravelPrices"
+const API_URL = import.meta.env.API_URL ?? 'http://localhost:3001'
 
 function App() {
 
-  const [providers, setProviders] = useState([
+
+  const [valid, setValid] = useState([]);
+
+  useEffect(() => {
+    fetch(API_URL + '/valid').then(
+      response => response.json()
+    ).then(
+      data => {
+        setValid(data)
+      }
+    )
+    
+  }, [])
+  console.log(valid)
+
+
+
+  const responsee = (valid) => {
+
+    fetch(API_URL + '/DbUpdater', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(valid),
+    });
+  }
+console.log(responsee)
+
+  const [testProviders, setTestProviders] = useState([
     {
       id: 12,
       company: "fabbb",
@@ -64,10 +95,10 @@ function App() {
 
 
   const handleAccordionToggle = (id) => {
-    const updatedProviders = providers.map((provider) =>
+    const updatedProviders = testProviders.map((provider) =>
       provider.id === id ? { ...provider, expanded: !provider.expanded } : provider
     );
-    setProviders(updatedProviders);
+    setTestProviders(updatedProviders);
   };
 
   const handleSignIn = 0;
@@ -137,7 +168,7 @@ function App() {
 
       <Group>
         <ScrollArea h={500} w={700}>
-          {providers.map(provider => (
+          {testProviders.map(provider => (
             <Accordion
               key={provider.id}
               label={provider.company}
