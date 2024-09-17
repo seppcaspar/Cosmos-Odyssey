@@ -13,8 +13,7 @@ export const routes = mysqlTable('routes', {
     id: bigint('id', { mode: 'number' }).primaryKey().autoincrement(),
     from: varchar('from', { length: 256 }),
     to: varchar('to', { length: 256 }),
-    distance: int('distance'),
-    validUntilID: bigint('validUntilID', { mode: 'number' }).references(() => dbValidUntil.id)
+    distance: varchar('distance', { length: 256 })
 });
 
 export const providers = mysqlTable('providers', {

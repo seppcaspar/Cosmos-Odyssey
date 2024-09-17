@@ -12,33 +12,22 @@ const API_URL = import.meta.env.API_URL ?? 'http://localhost:3001'
 function App() {
 
 
-  const [valid, setValid] = useState([]);
+  const [providers, setProviders] = useState([]);
 
   useEffect(() => {
-    fetch(API_URL + '/valid').then(
+    fetch(API_URL + '/newdata').then(
       response => response.json()
     ).then(
       data => {
-        setValid(data)
+        setProviders(data)
       }
     )
-    
+
   }, [])
-  console.log(valid)
 
 
 
-  const responsee = (valid) => {
 
-    fetch(API_URL + '/DbUpdater', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(valid),
-    });
-  }
-console.log(responsee)
 
   const [testProviders, setTestProviders] = useState([
     {
@@ -71,34 +60,103 @@ console.log(responsee)
     }
   ]);
 
-  const [customers, setCustomers] = useState([
+  const [routes, setRoutes] = useState([
     {
-      id: 1,
-      firstName: "john",
-      lastName: "doe",
-      Routes: "earth",
-      totalQuotedPrice: "55",
-      totalQuotedTravelTime: "44",
-      transportationCompanyNames: "elon",
+      "id": 1,
+      "from": "Earth",
+      "to": "Jupiter",
+      "distance": "628730000"
     },
     {
-      id: 2,
-      firstName: "caspar",
-      lastName: "sepp",
-      Routes: "mars",
-      totalQuotedPrice: "552",
-      totalQuotedTravelTime: "442",
-      transportationCompanyNames: "elonmusk",
+      "id": 2,
+      "from": "Earth",
+      "to": "Uranus",
+      "distance": "2723950000"
+    },
+    {
+      "id": 3,
+      "from": "Mercury",
+      "to": "Venus",
+      "distance": "50290000"
+    },
+    {
+      "id": 4,
+      "from": "Venus",
+      "to": "Mercury",
+      "distance": "50290000"
+    },
+    {
+      "id": 5,
+      "from": "Venus",
+      "to": "Earth",
+      "distance": "41400000"
+    },
+    {
+      "id": 6,
+      "from": "Mars",
+      "to": "Venus",
+      "distance": "119740000"
+    },
+    {
+      "id": 7,
+      "from": "Jupiter",
+      "to": "Mars",
+      "distance": "550390000"
+    },
+    {
+      "id": 8,
+      "from": "Jupiter",
+      "to": "Venus",
+      "distance": "670130000"
+    },
+    {
+      "id": 9,
+      "from": "Saturn",
+      "to": "Earth",
+      "distance": "1275000000"
+    },
+    {
+      "id": 10,
+      "from": "Saturn",
+      "to": "Neptune",
+      "distance": "3076400000"
+    },
+    {
+      "id": 11,
+      "from": "Uranus",
+      "to": "Saturn",
+      "distance": "1448950000"
+    },
+    {
+      "id": 12,
+      from: "Uranus",
+      "to": "Neptune",
+      "distance": "1627450000"
+    },
+    {
+      "id": 13,
+      "from": "Neptune",
+      "to": "Uranus",
+      "distance": "1627450000"
+    },
+    {
+      "id": 14,
+      "from": "Neptune",
+      "to": "Mercury",
+      "distance": "4443090000"
     }
-
-  ]);
+  ]
+  );
 
 
   const handleAccordionToggle = (id) => {
-    const updatedProviders = testProviders.map((provider) =>
+    const updatedProviders = providers.map((provider) =>
       provider.id === id ? { ...provider, expanded: !provider.expanded } : provider
     );
-    setTestProviders(updatedProviders);
+    setProviders(updatedProviders);
+  };
+  const handleFrom = (from) => {
+
   };
 
   const handleSignIn = 0;
@@ -137,6 +195,7 @@ console.log(responsee)
       </Group>
       <Box maw={700} pb={50}>
 
+
         <SimpleGrid cols={3} pb={10}>
           <Flex align="flex-end">
             <Button fullWidth>Show all</Button>
@@ -145,9 +204,12 @@ console.log(responsee)
           <NativeSelect label="Expired pricelists" description="Select an expired pricelist (Valid until)" data={['React', 'Angular', 'Vue']} />
 
         </SimpleGrid>
+
         <SimpleGrid cols={3}>
-          <NativeSelect label="From" data={['React', 'Angular', 'Vue']} />
+          <NativeSelect label="From" data={["Mercury", "Venus", "Earth", "Mars", "Jupiter", "Saturn", "Uranus", "Neptune"]} />
+
           <NativeSelect label="To" data={['React', 'Angular', 'Vue']} />
+
           <Flex justify="flex-start" direction="column">
             <Text>Distance:</Text>
             <Card mah={38} shadow="sm" radius="md" pt={6}>
@@ -156,6 +218,7 @@ console.log(responsee)
           </Flex>
 
         </SimpleGrid>
+
 
 
 
@@ -168,7 +231,7 @@ console.log(responsee)
 
       <Group>
         <ScrollArea h={500} w={700}>
-          {testProviders.map(provider => (
+          {providers.map(provider => (
             <Accordion
               key={provider.id}
               label={provider.company}

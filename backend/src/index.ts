@@ -3,6 +3,9 @@ import express from 'express'
 import cors from 'cors';
 import { dbValidUntil, db } from "./db/schema"
 import { eq } from "drizzle-orm"
+import { Validator } from "./db/datamanager/functions"
+import { UpdateThing } from './db/datamanager/updater';
+import { getnewdata } from './db/datamanager/providerImport';
 
 
 const app = express()
@@ -15,15 +18,47 @@ let max = 0;
 
 app.get("/api/json", async (req, res) => {
 
-    let url = "https://cosmos-odyssey.azurewebsites.net/api/v1.0/TravelPrices"
-    const response = await fetch(url)
-    const data = await response.json()
-    res.json({ data })
+  let url = "https://cosmos-odyssey.azurewebsites.net/api/v1.0/TravelPrices"
+  const response = await fetch(url)
+  const data = await response.json()
+  res.send(data)
+})
+
+app.get("/newdata", async (req, res) => {
+
+
+  const data = await getnewdata()
+  res.send(data)
 })
 
 
+app.get("/valid", async (req, res) => {
 
 
+  try {
+    const valid = await Validator()
+
+
+
+
+    if (valid?.dbValidUntil == valid?.newValidUntil) {
+
+      res.send("valid is up to date")
+    }
+
+
+
+    if (valid?.dbValidUntil !== valid?.newValidUntil) {
+      UpdateThing()
+      res.send("valid has been updated")
+    }
+
+
+  } catch (error) {
+    console.log(error)
+  }
+})
+/*
 app.get("/valid", async (req, res) => {
   let url = "https://cosmos-odyssey.azurewebsites.net/api/v1.0/TravelPrices"
   const response = await fetch(url)
@@ -45,7 +80,7 @@ app.get("/valid", async (req, res) => {
     console.log(error)
   }
 })
-
+*/
 
 app.post("/DbUpdater", async (req, res) => {
   let url = "https://cosmos-odyssey.azurewebsites.net/api/v1.0/TravelPrices"
@@ -60,11 +95,11 @@ app.post("/DbUpdater", async (req, res) => {
       res.send("validUntil is up to date!")
     if (valid.dbValidUntil !== valid.newValidUntil)
       await db.insert(dbValidUntil).values({
-  
+
         ValidUntil: newValidUntil
       }
-    );
-      res.send("validUntil has been updated!")
+      );
+    res.send("validUntil has been updated!")
 
   } catch (error) {
     console.log(error)
