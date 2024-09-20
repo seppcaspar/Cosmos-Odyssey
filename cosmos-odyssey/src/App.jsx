@@ -1,9 +1,8 @@
 import { useEffect, useState } from 'react'
 import '@mantine/core/styles.css';
-import { TextInput, NativeSelect, SimpleGrid, Accordion, ScrollArea, Card, Input, Text, Flex, Grid, Image, Box, Group, Button } from '@mantine/core';
+import { Autocomplete, TextInput, NativeSelect, SimpleGrid, Accordion, ScrollArea, Card, Input, Text, Flex, Grid, Image, Box, Group, Button, List } from '@mantine/core';
 import map from './assets/map.png'
 import login from "./assets/login.png"
-import { useForm } from '@mantine/form';
 
 
 const apiUrl = "https://cosmos-odyssey.azurewebsites.net/api/v1.0/TravelPrices"
@@ -13,20 +12,27 @@ function App() {
 
 
   const [providers, setProviders] = useState([]);
+  const [listProviders, setListProviders] = useState([]);
+  const [filters, setFilters] = useState([]);
 
   useEffect(() => {
     fetch(API_URL + '/newdata').then(
       response => response.json()
     ).then(
       data => {
-        setProviders(data)
+        //setProviders(data)
+        setListProviders(data)
+        setFilters(data)
       }
     )
 
   }, [])
+  async function resetData() {
+    const response = await fetch(API_URL + '/newdata');
+    const data = await response.json();
+    setProviders(data);
 
-
-
+  }
 
 
   const [testProviders, setTestProviders] = useState([
@@ -147,7 +153,13 @@ function App() {
     }
   ]
   );
-
+  const [distance, setDistance] = useState('');
+  //const [fromValue, setFromValue] = useState('');
+  const [fromValue, setFromValue] = useState('');
+  const [toValue, setToValue] = useState();
+  const [companyValue, setCompanyValue] = useState();
+  const [routeid, setrouteid] = useState();
+  const [toFilter, setToFilter] = useState();
 
   const handleAccordionToggle = (id) => {
     const updatedProviders = providers.map((provider) =>
@@ -156,9 +168,63 @@ function App() {
     setProviders(updatedProviders);
   };
   const handleFrom = (from) => {
+    setFromValue(from)
+    let updatedTo = [""]
+    for (var i = 0, len = routes.length; i < len; i++) {
+      var item = routes[i];
+      if (item.from == from) {
+        updatedTo.push(item.to);
+      }
+    }
+    setToValue(updatedTo)
+
 
   };
 
+  const handleTo = async (to) => {
+    setToFilter(to)
+
+    for (var i = 0, len = routes.length; i < len; i++) {
+      var item = routes[i];
+      if (item.from == fromValue && item.to == to) {
+        setrouteid(item.id)
+        setDistance(item.distance)
+        let filtered = listProviders.filter(providers => providers.routeID == item.id)
+        if (companyValue != "") {
+          setProviders(filtered.filter(providers => providers.company == companyValue))
+        }
+        if (companyValue == "") {
+          setProviders(filtered)
+          
+        }
+
+
+      }
+    }
+    if (to == "") {
+      setProviders(listProviders.filter(providers => providers.company == companyValue))
+      setDistance(0)
+    }
+  }
+  const handleCompany = (company) => {
+        setCompanyValue(company)
+        let filtered = listProviders.filter(providers => providers.company == company)
+        if (toFilter != "") {
+          setProviders(filtered.filter(providers => providers.routeID == routeid))
+
+        }
+        if (toFilter == "") {
+          setProviders(filtered)
+          
+        }
+        if (company == "") {
+          setProviders(listProviders.filter(providers => providers.routeID == routeid))
+
+        }
+
+      
+    }
+  
   const handleSignIn = 0;
 
   return (
@@ -198,7 +264,7 @@ function App() {
 
         <SimpleGrid cols={3} pb={10}>
           <Flex align="flex-end">
-            <Button fullWidth>Show all</Button>
+            <Button fullWidth onClick={() => setProviders(listProviders)}>Show all</Button>
           </Flex>
 
           <NativeSelect label="Expired pricelists" description="Select an expired pricelist (Valid until)" data={['React', 'Angular', 'Vue']} />
@@ -206,14 +272,22 @@ function App() {
         </SimpleGrid>
 
         <SimpleGrid cols={3}>
-          <NativeSelect label="From" data={["Mercury", "Venus", "Earth", "Mars", "Jupiter", "Saturn", "Uranus", "Neptune"]} />
+          <NativeSelect
+            label="From"
+            value={fromValue}
+            onChange={(event) => handleFrom(event.currentTarget.value)}
+            data={["", "Mercury", "Venus", "Earth", "Mars", "Jupiter", "Saturn", "Uranus", "Neptune"]} />
 
-          <NativeSelect label="To" data={['React', 'Angular', 'Vue']} />
+          <NativeSelect
+            //value={selectedTo}
+            onChange={(event) => handleTo(event.currentTarget.value)}
+            label="To"
+            data={toValue} />
 
           <Flex justify="flex-start" direction="column">
             <Text>Distance:</Text>
             <Card mah={38} shadow="sm" radius="md" pt={6}>
-              <Text>23094900KM</Text>
+              <Text>{distance}KM</Text>
             </Card>
           </Flex>
 
@@ -221,12 +295,25 @@ function App() {
 
 
 
-
       </Box>
 
 
+      <Flex
+        mih={50}
+        gap="md"
+        justify="flex-start"
+        align="flex-end"
+        direction="row"
+        wrap="wrap"
+      >
 
-      <Button>Filter</Button>
+        <Button onClick={() => console.log(fromValue)}>Filter</Button>
+        <NativeSelect
+          label="Filter by company"
+          onChange={(event) => handleCompany(event.currentTarget.value)}
+          placeholder="Enter company name"
+          data={["",'Space Odyssey', 'Explore Origin', 'Spacelux', 'Galaxy Express', 'Travel Nova', 'Spacegenix', 'Explore Dynamite', 'Space Voyager', 'SpaceX', 'Space Piper']}/>
+      </Flex>
 
 
       <Group>

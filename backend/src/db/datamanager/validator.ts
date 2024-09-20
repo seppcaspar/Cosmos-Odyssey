@@ -1,5 +1,5 @@
 
-import { dbValidUntil, db } from "../../db/schema"
+import { dbValidUntil, db } from "../schema"
 
 
 export const Validator = async () => {

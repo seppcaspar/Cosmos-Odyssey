@@ -22,8 +22,8 @@ export const providers = mysqlTable('providers', {
     price: int('price'),
     flightStart: varchar('flightStart', { length: 256 }),
     flightEnd: varchar("flightEnd", { length: 256 }),
-    routeID: bigint('routeID', { mode: 'number' }).references(() => routes.id),
-    validUntilID: bigint('validUntilID', { mode: 'number' }).references(() => dbValidUntil.id)
+    routeID: bigint('routeID', { mode: 'number' }),
+    validUntilID: bigint('validUntilID', { mode: 'number' })
 });
 
 if (!process.env.DB_URL) {

@@ -1,4 +1,5 @@
 import { providers, dbValidUntil, db } from "../../db/schema"
+import { newValidChecker } from "./newValidChecker"
 
 
 export const getnewdata = async () => {
@@ -6,8 +7,10 @@ export const getnewdata = async () => {
         let url = "https://cosmos-odyssey.azurewebsites.net/api/v1.0/TravelPrices"
         const response = await fetch(url)
         const data = await response.json()
+        const ider = await newValidChecker()
+        let validID = ider!
         var extractedValues: { id: number; 
-            company: any; price: any; flightStart: any; flightEnd: any; routeID: number }[] = [];
+            company: any; price: any; flightStart: any; flightEnd: any; routeID: number; ValidUntilID: number; }[] = [];
         var routeIDcounter = 0;
         var newidCounter = 1;
         data.legs.forEach(function (leg: { providers: any[] }) {
@@ -21,7 +24,8 @@ export const getnewdata = async () => {
                     price: provider.price,
                     flightStart: provider.flightStart,
                     flightEnd: provider.flightEnd,
-                    routeID: routeIDcounter
+                    routeID: routeIDcounter,
+                    ValidUntilID: validID
                 });
             });
         });

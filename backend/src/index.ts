@@ -3,9 +3,12 @@ import express from 'express'
 import cors from 'cors';
 import { dbValidUntil, db } from "./db/schema"
 import { eq } from "drizzle-orm"
-import { Validator } from "./db/datamanager/functions"
+import { validList } from "./db/datamanager/dbValidList"
 import { UpdateThing } from './db/datamanager/updater';
 import { getnewdata } from './db/datamanager/providerImport';
+import { Validator } from './db/datamanager/validator';
+import { validUpdater } from './db/datamanager/validUpdater';
+import { newValidChecker } from './db/datamanager/newValidChecker';
 
 
 const app = express()
@@ -27,9 +30,28 @@ app.get("/api/json", async (req, res) => {
 app.get("/newdata", async (req, res) => {
 
 
-  const data = await getnewdata()
+  const data = await validUpdater()
   res.send(data)
 })
+
+app.get("/newValidChecker", async (req, res) => {
+
+
+  const data = await newValidChecker()
+  res.send(data?.toString())
+})
+
+app.get("/validList", async (req, res) => {
+  const data = await validList()
+  res.send(data)
+})
+
+app.get("/validUpdater", async (req, res) => {
+  const data = await validUpdater()
+  const id = await newValidChecker()
+
+})
+
 
 
 app.get("/valid", async (req, res) => {
@@ -58,6 +80,7 @@ app.get("/valid", async (req, res) => {
     console.log(error)
   }
 })
+
 /*
 app.get("/valid", async (req, res) => {
   let url = "https://cosmos-odyssey.azurewebsites.net/api/v1.0/TravelPrices"

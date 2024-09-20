@@ -29,6 +29,13 @@
       "when": 1726575146365,
       "tag": "0003_clever_zuras",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "5",
+      "when": 1726856342948,
+      "tag": "0004_talented_sentinel",
+      "breakpoints": true
     }
   ]
 }
