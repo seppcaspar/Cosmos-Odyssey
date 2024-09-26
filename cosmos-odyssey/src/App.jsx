@@ -14,25 +14,40 @@ function App() {
   const [providers, setProviders] = useState([]);
   const [listProviders, setListProviders] = useState([]);
   const [filters, setFilters] = useState([]);
+  const [valids, setValids] = useState([]);
+  const [pricelists, setPricelists] = useState();
+  const [megaList, setMegaList] = useState([]);
+  const [validID, setValidID] = useState();
 
   useEffect(() => {
     fetch(API_URL + '/newdata').then(
       response => response.json()
     ).then(
       data => {
-        //setProviders(data)
-        setListProviders(data)
-        setFilters(data)
+        setMegaList(data.allprovs)
+        
+        setValids(data.validListes)
+        let valides = []
+        for (var i = 0, len = data.validListes.length; i < len; i++) {
+          var item = data.validListes[i];
+          valides.push(item.ValidUntil);
+        }
+        valides.sort((a, b) => b.localeCompare(a))
+        setPricelists(valides)
+        for (var i = 0, len = data.validListes.length; i < len; i++) {
+          var item = data.validListes[i];
+          if (item.ValidUntil == valides[0]) {
+            setValidID(item.id)  
+          }
+        }
+        setListProviders(megaList.filter(listProviders => listProviders.validUntilID == validID))
+        setFilters(megaList.filter(listProviders => listProviders.validUntilID == validID))
       }
     )
+    
 
   }, [])
-  async function resetData() {
-    const response = await fetch(API_URL + '/newdata');
-    const data = await response.json();
-    setProviders(data);
 
-  }
 
 
   const [testProviders, setTestProviders] = useState([
@@ -157,9 +172,14 @@ function App() {
   //const [fromValue, setFromValue] = useState('');
   const [fromValue, setFromValue] = useState('');
   const [toValue, setToValue] = useState();
-  const [companyValue, setCompanyValue] = useState();
+  const [companyValue, setCompanyValue] = useState("");
   const [routeid, setrouteid] = useState();
-  const [toFilter, setToFilter] = useState();
+  const [toFilter, setToFilter] = useState("");
+
+
+
+  
+ 
 
   const handleAccordionToggle = (id) => {
     const updatedProviders = providers.map((provider) =>
@@ -224,7 +244,20 @@ function App() {
 
       
     }
-  
+    
+    const handleValid = (valid) => {
+      for (var i = 0, len = valids.length; i < len; i++) {
+        var item = valids[i];
+        if (item.ValidUntil == valid) {
+          setValidID(item.id)  
+        }
+      }
+      setListProviders(megaList.filter(listProviders => listProviders.validUntilID == validID))
+      setFilters(listProviders)
+      handleTo("")
+      handleFrom("")
+      handleCompany("")
+    };
   const handleSignIn = 0;
 
   return (
@@ -267,7 +300,11 @@ function App() {
             <Button fullWidth onClick={() => setProviders(listProviders)}>Show all</Button>
           </Flex>
 
-          <NativeSelect label="Expired pricelists" description="Select an expired pricelist (Valid until)" data={['React', 'Angular', 'Vue']} />
+          <NativeSelect 
+          label="Expired pricelists" 
+          description="Select an expired pricelist (Valid until)" 
+          onChange={(event) => handleValid(event.currentTarget.value)}
+          data={pricelists} />
 
         </SimpleGrid>
 
@@ -307,9 +344,10 @@ function App() {
         wrap="wrap"
       >
 
-        <Button onClick={() => console.log(fromValue)}>Filter</Button>
+        <Button onClick={() => console.log(listProviders)}>Filter</Button>
         <NativeSelect
           label="Filter by company"
+          value={companyValue}
           onChange={(event) => handleCompany(event.currentTarget.value)}
           placeholder="Enter company name"
           data={["",'Space Odyssey', 'Explore Origin', 'Spacelux', 'Galaxy Express', 'Travel Nova', 'Spacegenix', 'Explore Dynamite', 'Space Voyager', 'SpaceX', 'Space Piper']}/>

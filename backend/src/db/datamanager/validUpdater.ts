@@ -4,6 +4,9 @@ import { UpdateThing } from "./updater"
 import { eq } from "drizzle-orm"
 import { Validator } from "./validator"
 import { getnewdata } from "./providerImport"
+import { dbDropper } from "./dbDropper"
+import { dbProvUpdater } from "./dbProvUpdater"
+import { dbFetch } from "./dbFetch"
 
 
 export const validUpdater = async () => {
@@ -18,18 +21,20 @@ export const validUpdater = async () => {
         const newValidUntil = data.validUntil
         let field = {ValidUntil: newValidUntil}
         
-        if (valid?.dbValidUntil !== valid?.newValidUntil) {
+        if (valid?.dbValidUntil != valid?.newValidUntil) {
 
-            if (dbValidList!.length == 7) {
+            if (dbValidList!.length == 15) {
+                await dbDropper()
                 await db.update(dbValidUntil).set(field).where(eq(dbValidUntil.ValidUntil, lowest!));
             } else {
                 await db.insert(dbValidUntil).values({
                     ValidUntil: newValidUntil
                 })
             }
+            await dbProvUpdater()
 
         }
-        return(getnewdata())
+        return dbFetch()
 
 
 
