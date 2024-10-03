@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import '@mantine/core/styles.css';
-import { TextInput, NativeSelect, SimpleGrid, Accordion, ScrollArea, Card, Input, Text, Flex, Grid, Image, Box, Group, Button } from '@mantine/core';
+import { TextInput, NativeSelect, SimpleGrid, Accordion, ScrollArea, Card, Input, Text, Flex, Grid, Image, Box, Group, Button, Menu } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import map from './assets/map.png'
 import login from "./assets/login.png"
@@ -51,6 +51,7 @@ function App() {
   const [validID, setValidID] = useState();
   const [sign, setSign] = useState("");
   const [name, setName] = useState();
+  const [sorter, setSorter] = useState("10");
 
   useEffect(() => {
     fetch(API_URL + '/newdata').then(
@@ -241,6 +242,7 @@ function App() {
     setProviders(updatedProviders);
   };
   const handleFrom = (from) => {
+    setSorter("0")
     setFromValue(from)
     let updatedTo = [""]
     for (var i = 0, len = routes.length; i < len; i++) {
@@ -264,7 +266,7 @@ function App() {
 
   const handleTo = async (to) => {
     setToFilter(to)
-
+    setSorter("0")
     for (var i = 0, len = routes.length; i < len; i++) {
       var item = routes[i];
       if (item.from == fromValue && item.to == to) {
@@ -289,6 +291,7 @@ function App() {
     }
   }
   const handleCompany = (company) => {
+    setSorter("0")
     setCompanyValue(company)
     let filtered = listProviders.filter(providers => providers.company == company)
     if (toFilter != "") {
@@ -313,6 +316,7 @@ function App() {
   }
 
   const handleValid = (valid) => {
+    setSorter("0")
     handleTo("")
     handleFrom("")
     handleCompany("")
@@ -333,6 +337,7 @@ function App() {
     handleTo("")
     handleFrom("")
     handleCompany("")
+    setSorter("0")
     setProviders(listProviders);
   };
   const handleNotification = (data) => {
@@ -357,7 +362,7 @@ function App() {
     let timeTotal = 0
     let list = []
     let idCounter = 50
-    
+
     //for each providerID
     for (var i = 0, len = reservations.length; i < len; i++) {
       let current = reservations[i]
@@ -397,8 +402,20 @@ function App() {
     setReservations(list)
 
   };
-  const handleReserve = () => {
+  const handleSort = (sort) => {
+    try {
 
+      if (sort == "des") {
+        setProviders(providers.sort((a, b) => (a.price > b.price ? -1 : 1)))
+        setSorter("1")
+      }
+      if (sort == "asc") {
+        setProviders(providers.sort((a, b) => (a.price < b.price ? -1 : 1)))
+        setSorter("2")
+      }
+    } catch (error) {
+      console.log(error)
+    }
   }
   const handleSignIn = 0;
 
@@ -533,7 +550,19 @@ function App() {
         wrap="wrap"
       >
 
-        <Button onClick={() => console.log(reservations)}>Filter</Button>
+        <Menu shadow="md" width={200}>
+          <Menu.Target>
+            <Button>Sort by</Button>
+          </Menu.Target>
+          <Menu.Dropdown>
+            <Menu.Item onClick={() => handleSort("des")}>
+              Price (descending)
+            </Menu.Item>
+            <Menu.Item onClick={() => handleSort("asc")}>
+              price (ascending)
+            </Menu.Item>
+          </Menu.Dropdown>
+        </Menu>
         <NativeSelect
           label="Filter by company"
           value={companyValue}
