@@ -7,7 +7,6 @@
 - npm i
 - npm run dev
 
-
 # running backend
 
 ###
@@ -22,6 +21,9 @@
 #### Install dependencies
 
     npm i
+
+    create .env
+    copy contents of .env.example into .env
 
 #### Update database 
     1. npm run generate
