@@ -7,6 +7,7 @@ import { getnewdata } from "./providerImport"
 import { dbDropper } from "./dbDropper"
 import { dbProvUpdater } from "./dbProvUpdater"
 import { dbFetch } from "./dbFetch"
+import { reservDropper } from "./reservDropper"
 
 
 export const validUpdater = async () => {
@@ -25,6 +26,7 @@ export const validUpdater = async () => {
 
             if (dbValidList!.length == 15) {
                 await dbDropper()
+                await reservDropper()
                 await db.update(dbValidUntil).set(field).where(eq(dbValidUntil.ValidUntil, lowest!));
             } else {
                 await db.insert(dbValidUntil).values({

@@ -1,14 +1,45 @@
 import { useEffect, useState } from 'react'
 import '@mantine/core/styles.css';
-import { Autocomplete, TextInput, NativeSelect, SimpleGrid, Accordion, ScrollArea, Card, Input, Text, Flex, Grid, Image, Box, Group, Button, List } from '@mantine/core';
+import { TextInput, NativeSelect, SimpleGrid, Accordion, ScrollArea, Card, Input, Text, Flex, Grid, Image, Box, Group, Button } from '@mantine/core';
+import { useForm } from '@mantine/form';
 import map from './assets/map.png'
 import login from "./assets/login.png"
+import { notifications } from '@mantine/notifications';
+import '@mantine/notifications/styles.css';
 
-
-const apiUrl = "https://cosmos-odyssey.azurewebsites.net/api/v1.0/TravelPrices"
 const API_URL = import.meta.env.API_URL ?? 'http://localhost:3001'
+const notEmpty = (value) => value?.trim().length == 0 ? "This field is required" : null;
 
 function App() {
+
+  const form = useForm({
+    initialValues: {
+      firstName: "",
+      lastName: "",
+      validUntilID: "",
+    },
+
+    validate: {
+      firstName: notEmpty,
+      lastName: notEmpty,
+    },
+  });
+
+  const reserveForm = useForm({
+    initialValues: {
+      providerID: "",
+      firstName: "",
+      lastName: "",
+      validUntilID: "",
+    },
+
+    validate: {
+      firstName: notEmpty,
+      lastName: notEmpty,
+    },
+  });
+
+
 
 
   const [providers, setProviders] = useState([]);
@@ -18,6 +49,8 @@ function App() {
   const [pricelists, setPricelists] = useState();
   const [megaList, setMegaList] = useState([]);
   const [validID, setValidID] = useState();
+  const [sign, setSign] = useState("");
+  const [name, setName] = useState();
 
   useEffect(() => {
     fetch(API_URL + '/newdata').then(
@@ -25,7 +58,7 @@ function App() {
     ).then(
       data => {
         setMegaList(data.allprovs)
-        
+
         setValids(data.validListes)
         let valides = []
         for (var i = 0, len = data.validListes.length; i < len; i++) {
@@ -37,16 +70,23 @@ function App() {
         for (var i = 0, len = data.validListes.length; i < len; i++) {
           var item = data.validListes[i];
           if (item.ValidUntil == valides[0]) {
-            setValidID(item.id)  
+            setValidID(item.id)
+            form.setValues({
+              validUntilID: item.id
+            })
+            setListProviders(data.allprovs.filter(listProviders => listProviders.validUntilID == item.id))
+            setFilters(data.allprovs.filter(listProviders => listProviders.validUntilID == item.id))
+            setProviders(data.allprovs.filter(listProviders => listProviders.validUntilID == item.id))
           }
         }
-        setListProviders(megaList.filter(listProviders => listProviders.validUntilID == validID))
-        setFilters(megaList.filter(listProviders => listProviders.validUntilID == validID))
+
       }
     )
-    
+
 
   }, [])
+
+
 
 
 
@@ -175,11 +215,24 @@ function App() {
   const [companyValue, setCompanyValue] = useState("");
   const [routeid, setrouteid] = useState();
   const [toFilter, setToFilter] = useState("");
+  const [reservations, setReservations] = useState([]);
+  const [priceTotal, setPriceTotal] = useState();
+  const [timeTotal, setTimeTotal] = useState();
+  const [seeReserv, setSeeReserv] = useState("hidden");
 
 
 
-  
- 
+  const handleReservationsToggle = () => {
+    if (seeReserv == "hidden") {
+      setSeeReserv("shown")
+    } else {
+      setSeeReserv("hidden")
+
+    }
+    console.log(seeReserv)
+
+  }
+
 
   const handleAccordionToggle = (id) => {
     const updatedProviders = providers.map((provider) =>
@@ -197,7 +250,15 @@ function App() {
       }
     }
     setToValue(updatedTo)
-
+    if (from == "") {
+      if (companyValue == "") {
+        setProviders(listProviders)
+      } else {
+        setProviders(listProviders.filter(providers => providers.company == companyValue))
+      }
+      setDistance(0)
+      setToFilter("")
+    }
 
   };
 
@@ -215,49 +276,130 @@ function App() {
         }
         if (companyValue == "") {
           setProviders(filtered)
-          
         }
-
-
       }
     }
     if (to == "") {
-      setProviders(listProviders.filter(providers => providers.company == companyValue))
+      if (companyValue == "") {
+        setProviders(listProviders)
+      } else {
+        setProviders(listProviders.filter(providers => providers.company == companyValue))
+      }
       setDistance(0)
     }
   }
   const handleCompany = (company) => {
-        setCompanyValue(company)
-        let filtered = listProviders.filter(providers => providers.company == company)
-        if (toFilter != "") {
-          setProviders(filtered.filter(providers => providers.routeID == routeid))
+    setCompanyValue(company)
+    let filtered = listProviders.filter(providers => providers.company == company)
+    if (toFilter != "") {
+      setProviders(filtered.filter(providers => providers.routeID == routeid))
 
-        }
-        if (toFilter == "") {
-          setProviders(filtered)
-          
-        }
-        if (company == "") {
-          setProviders(listProviders.filter(providers => providers.routeID == routeid))
-
-        }
-
-      
     }
+    if (toFilter == "") {
+      setProviders(filtered)
+
+    }
+    if (company == "") {
+      if (toFilter == "") {
+        setProviders(listProviders)
+      } else {
+        setProviders(listProviders.filter(providers => providers.routeID == routeid))
+      }
+
+
+    }
+
+
+  }
+
+  const handleValid = (valid) => {
+    handleTo("")
+    handleFrom("")
+    handleCompany("")
+    for (var i = 0, len = valids.length; i < len; i++) {
+      var item = valids[i];
+      if (item.ValidUntil == valid) {
+        setValidID(item.id)
+        setListProviders(megaList.filter(listProviders => listProviders.validUntilID == item.id))
+        setFilters(megaList.filter(listProviders => listProviders.validUntilID == item.id))
+        setProviders(megaList.filter(listProviders => listProviders.validUntilID == item.id))
+        console.log(item.id)
+      }
+    }
+
+
+  };
+  const handleShowAll = () => {
+    handleTo("")
+    handleFrom("")
+    handleCompany("")
+    setProviders(listProviders);
+  };
+  const handleNotification = (data) => {
+    if (data.status == "already exists")
+      notifications.show({
+        title: "Reservation failed",
+        message: "Reservation already exists!",
+
+
+      })
+    if (data.status == "outdated")
+      notifications.show({
+        title: "Reservation failed",
+        message: "Selected pricelist is expired!"
+      })
+  };
+
+  const handleSign = (reservations) => {
+    //"reservations" contains provider ids
+    setSign("signed")
+    let priceTotal = 0
+    let timeTotal = 0
+    let list = []
+    let idCounter = 50
     
-    const handleValid = (valid) => {
-      for (var i = 0, len = valids.length; i < len; i++) {
-        var item = valids[i];
-        if (item.ValidUntil == valid) {
-          setValidID(item.id)  
+    //for each providerID
+    for (var i = 0, len = reservations.length; i < len; i++) {
+      let current = reservations[i]
+      //look through all providers
+      for (var j = 0, len2 = megaList.length; j < len2; j++) {
+        let item = megaList[j]
+        //search for the "reservations"ID
+        if (item.id == current) {
+          for (var k = 0, len3 = routes.length; k < len3; k++) {
+            let route = routes[k]
+            //search the route of the provider
+            if (route.id == item.routeID) {
+              let valid = valids.filter(valids => valids.id == item.validUntilID)
+              let router = `From ${route.from} To ${route.to}`
+              priceTotal += item.price
+              var eventStartTime = new Date(item.flightStart);
+              var eventEndTime = new Date(item.flightEnd);
+              var duration = Math.floor((((eventEndTime.valueOf() - eventStartTime.valueOf()) / 1000) / 60) / 60);
+              timeTotal += duration
+              list.push({
+                id: idCounter++,
+                route: router,
+                company: item.company,
+                price: item.price,
+                flightStart: item.flightStart,
+                flightEnd: item.flightEnd,
+                validUntil: valid[0].ValidUntil
+              })
+            }
+          }
         }
       }
-      setListProviders(megaList.filter(listProviders => listProviders.validUntilID == validID))
-      setFilters(listProviders)
-      handleTo("")
-      handleFrom("")
-      handleCompany("")
-    };
+    }
+    list.sort((a, b) => b.validUntil.localeCompare(a.validUntil) || b.company - a.company);
+    setPriceTotal(priceTotal)
+    setTimeTotal(timeTotal)
+    setReservations(list)
+
+  };
+  const handleReserve = () => {
+
+  }
   const handleSignIn = 0;
 
   return (
@@ -267,19 +409,66 @@ function App() {
         <Flex mah={350} direction="column" align="flex-start">
           <Text size="50px" fw={500}>Cosmos Odyssey</Text>
 
+          <form onSubmit={form.onSubmit(async (values) => {
+            try {
+              const response = await fetch(API_URL + "/getRes/" + values.firstName + "/" + values.lastName);
+              setName(values.firstName + " " + values.lastName)
+              const data = await response.json()
+              let reservations = []
+              for (var i = 0, len = data.length; i < len; i++) {
+                var item = data[i];
+                reservations.push(item.providerID);
+              }
+              handleSign(reservations)
+              console.log(reservations)
 
-          <Group>
+            } catch (error) {
 
-            <Image src={login} h={100} w="auto" fit='contain' />
+              console.error(error);
+            }
+          })}>
+
             <Group>
-              <TextInput size='md' placeholder="First name"></TextInput>
-              <TextInput size="md" placeholder="Last name"></TextInput>
+
+              <Image src={login} h={100} w="auto" fit='contain' />
+              {sign === "" &&
+                <Group>
+                  <TextInput size='md' placeholder="First name" {...form.getInputProps('firstName')}></TextInput>
+                  <TextInput size="md" placeholder="Last name" {...form.getInputProps('lastName')}></TextInput>
+                </Group>
+              }
+              {sign === "" &&
+                <Button type="submit"
+                  size='md'>Sign In</Button>
+              }
+              {sign === "signed" &&
+
+
+                <Text size='xl'>
+                  {name}
+                </Text>
+
+
+              }
+
             </Group>
+            {sign === "signed" &&
+              <div>
+                <Text>Total quoted price: {priceTotal}</Text>
+                <Text>Total quoted travel time: {timeTotal}h</Text>
 
-            <Button
-              size='md'>Sign In</Button>
+                <Button onClick={() => handleReservationsToggle()} size="md">
+                  {seeReserv === "hidden" &&
+                    "Show reservations"
+                  }
+                  {seeReserv === "shown" &&
+                    "Hide reservations"
+                  }
+                </Button>
+              </div>
 
-          </Group>
+            }
+          </form>
         </Flex>
 
 
@@ -297,14 +486,14 @@ function App() {
 
         <SimpleGrid cols={3} pb={10}>
           <Flex align="flex-end">
-            <Button fullWidth onClick={() => setProviders(listProviders)}>Show all</Button>
+            <Button fullWidth onClick={() => handleShowAll()}>Show all</Button>
           </Flex>
 
-          <NativeSelect 
-          label="Expired pricelists" 
-          description="Select an expired pricelist (Valid until)" 
-          onChange={(event) => handleValid(event.currentTarget.value)}
-          data={pricelists} />
+          <NativeSelect
+            label="Expired pricelists"
+            description="Select an expired pricelist (Valid until)"
+            onChange={(event) => handleValid(event.currentTarget.value)}
+            data={pricelists} />
 
         </SimpleGrid>
 
@@ -344,17 +533,19 @@ function App() {
         wrap="wrap"
       >
 
-        <Button onClick={() => console.log(listProviders)}>Filter</Button>
+        <Button onClick={() => console.log(reservations)}>Filter</Button>
         <NativeSelect
           label="Filter by company"
           value={companyValue}
           onChange={(event) => handleCompany(event.currentTarget.value)}
           placeholder="Enter company name"
-          data={["",'Space Odyssey', 'Explore Origin', 'Spacelux', 'Galaxy Express', 'Travel Nova', 'Spacegenix', 'Explore Dynamite', 'Space Voyager', 'SpaceX', 'Space Piper']}/>
+          data={["", 'Space Odyssey', 'Explore Origin', 'Spacelux', 'Galaxy Express', 'Travel Nova', 'Spacegenix', 'Explore Dynamite', 'Space Voyager', 'SpaceX', 'Space Piper']} />
+        <Text>Results: {providers.length}</Text>
       </Flex>
 
 
-      <Group>
+      <Group justify='space-between'>
+        {/* visible providers list */}
         <ScrollArea h={500} w={700}>
           {providers.map(provider => (
             <Accordion
@@ -381,30 +572,84 @@ function App() {
 
                 {provider.expanded && (
                   <div>
-                    <Grid pt={10}>
-                      <Grid.Col span={4}>
-                        <Input size="md" placeholder="First name"></Input>
-                      </Grid.Col>
-                      <Grid.Col span={4}>
-                        <Input size="md" placeholder="Last name"></Input>
-                      </Grid.Col>
-                      <Grid.Col span={4}>
-                        <Flex justify="flex-end">
-                          <Button>Reserve</Button>
-                        </Flex>
+                    <form onSubmit={reserveForm.onSubmit(async (values) => {
+                      try {
+                        const response = await fetch(API_URL + "/setRes/" + provider.id + "/" + values.firstName + "/" + values.lastName + "/" + provider.validUntilID)
+                        const data = await response.json()
+                        console.log(data)
+                        if (data.status == "outdated" || data.status == "already exists") {
 
-                      </Grid.Col>
-                    </Grid>
+                          handleNotification(data)
 
+                        } else {
+                          setName(values.firstName + " " + values.lastName)
+                          let reservations = []
+                          for (var i = 0, len = data.length; i < len; i++) {
+                            var item = data[i];
+                            reservations.push(item.providerID);
+                          }
+                          handleSign(reservations)
+                          notifications.show({
+                            title: "Reservation created",
+                            message: "A new reservation has been created under your name!"
+                          })
+                        }
+
+                      } catch (error) {
+                        console.log(error)
+                      }
+                    })}>
+
+                      <Grid pt={10}>
+                        <Grid.Col span={4}>
+                          <Input size="md" placeholder="First name" {...reserveForm.getInputProps('firstName')}></Input>
+                        </Grid.Col>
+                        <Grid.Col span={4}>
+                          <Input size="md" placeholder="Last name" {...reserveForm.getInputProps('lastName')}></Input>
+                        </Grid.Col>
+                        <Grid.Col span={4}>
+                          <Flex justify="flex-end">
+                            <Button type='submit'>Reserve</Button>
+                          </Flex>
+
+                        </Grid.Col>
+                      </Grid>
+
+                    </form>
                   </div>
                 )}
               </Card>
             </Accordion>
           ))}
         </ScrollArea>
+
+        {/* show reservations for signed in user */}
+
+        {seeReserv === "shown" &&
+          <div>
+
+            <Text size="30px" fw={500}>Reservations</Text>
+            <ScrollArea h={500} w={700}>
+              {reservations.map(provider => (
+                <Card shadow="sm" padding="md" radius="md" style={{ marginTop: '10px' }}>
+                  <Group justify='space-between' align='top'>
+                    <Text weight={700} size="lg">
+                      <Text>Route: {provider.route}</Text>
+                      <Text>Company: {provider.company}</Text>
+                      <Text>Price: {provider.price}</Text>
+                      <Text>Flight start: {provider.flightStart}</Text>
+                      <Text>Flight end: {provider.flightEnd}</Text>
+                      <Text>Valid until: {provider.validUntil}</Text>
+                    </Text>
+                  </Group>
+                </Card>
+              ))}
+            </ScrollArea>
+          </div>
+        }
       </Group>
 
-    </Box>
+    </Box >
   );
 }
 

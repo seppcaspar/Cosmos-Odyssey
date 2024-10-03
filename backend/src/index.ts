@@ -1,7 +1,7 @@
 import 'dotenv/config';
 import express from 'express'
 import cors from 'cors';
-import { dbValidUntil, db } from "./db/schema"
+import { dbValidUntil, reservations, db } from "./db/schema"
 import { eq } from "drizzle-orm"
 import { validList } from "./db/datamanager/dbValidList"
 import { UpdateThing } from './db/datamanager/updater';
@@ -15,11 +15,16 @@ import { getValid } from './db/datamanager/getValid';
 import { dbProvUpdater } from './db/datamanager/dbProvUpdater';
 import { testing } from './db/datamanager/testing';
 import { getValidList } from './db/datamanager/getValidList';
+import { dbReserveCheck } from './db/datamanager/dbReserveCheck';
+import { dbReserve } from './db/datamanager/dbReserve';
 
 
 const app = express()
 const port = process.env.PORT || 3001
-app.use(cors());
+app.use(cors({
+  origin: 'http://localhost:5173',
+  optionsSuccessStatus: 200
+}));
 app.use(express.json()) // for parsing application/json
 app.use(express.urlencoded({ extended: true })) // for parsing application/x-www-form-urlencoded
 
@@ -44,10 +49,39 @@ app.get("/newdata", async (req, res) => {
   }
   res.send(obj)
 })
-app.get("/testing", async (req, res) => {
+app.get("/getRes/:firstName/:lastName", async (req, res) => {
+  const {firstName, lastName} = req.params
+  const result = await db.select().from(reservations).where(eq(reservations.firstName, firstName)&&eq(reservations.lastName, lastName))
+  res.send(result)
+})
+app.get("/setRes/:providerID/:firstName/:lastName/:validUntilID", async (req, res) => {
+  
+  const {providerID, firstName, lastName, validUntilID} = req.params
+  let fields =
+  {
+    providerID: parseInt(providerID),
+    firstName: firstName,
+    lastName: lastName,
+    validUntilID: parseInt(validUntilID)
+  }
+  
+  //const result = await db.insert(reservations).values(fields).$returningId()
+  let result = await dbReserve(fields)
+  res.send(result)
+  
+})
 
+app.get("/testing/:providerID/:firstName/:lastName/:validUntilID", async (req, res) => {
 
-  const data = await testing()
+  const {providerID, firstName, lastName, validUntilID} = req.params
+  let fields =
+  {
+    providerID: parseInt(providerID),
+    firstName: firstName,
+    lastName: lastName,
+    validUntilID: parseInt(validUntilID)
+  }
+  const data = await dbReserve(fields)
   res.send(data)
 })
 app.get("/validator", async (req, res) => {

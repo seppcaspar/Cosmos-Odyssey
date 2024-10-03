@@ -36,6 +36,20 @@
       "when": 1726856342948,
       "tag": "0004_talented_sentinel",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "5",
+      "when": 1727439056286,
+      "tag": "0005_parallel_norman_osborn",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "5",
+      "when": 1727439861655,
+      "tag": "0006_eminent_venom",
+      "breakpoints": true
     }
   ]
 }
