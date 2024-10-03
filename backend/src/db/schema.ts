@@ -1,6 +1,5 @@
 import { mysqlTable, bigint, varchar, int } from 'drizzle-orm/mysql-core';
 import { drizzle } from "drizzle-orm/mysql2";
-import { createConnection } from "mysql2";
 import mysql from "mysql2";
 import 'dotenv/config';
 

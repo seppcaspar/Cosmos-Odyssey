@@ -1,3 +1,5 @@
+//not sure if i can remove this file.
+
 import { drizzle } from "drizzle-orm/mysql2";
 import mysql from "mysql2";
 import 'dotenv/config';

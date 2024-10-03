@@ -2,7 +2,7 @@ import { dbValidUntil, db } from "../../db/schema"
 import { validList } from "./dbValidList"
 import { eq } from "drizzle-orm"
 
-
+//sends the oldest validUntil ID from database list
 export const oldValidChecker = async () => {
     try {
         let dbValidList = await validList()

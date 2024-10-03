@@ -2,7 +2,7 @@ import { dbValidUntil, db } from "../../db/schema"
 import { validList } from "./dbValidList"
 import { eq } from "drizzle-orm"
 
-
+//checks for the latest validUntil in database
 export const newValidChecker = async () => {
     try {
         let dbValidList = await validList()

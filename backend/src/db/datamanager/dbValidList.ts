@@ -1,12 +1,8 @@
 import { dbValidUntil, db } from "../../db/schema"
 
-
+//gets validUntil list from database
 export const validList = async () => {
-    let url = "https://cosmos-odyssey.azurewebsites.net/api/v1.0/TravelPrices"
-    const response = await fetch(url)
-    const data = await response.json()
     try {
-        const newValidUntil = data.validUntil
         const ValidUntils = await db.select().from(dbValidUntil)
         let dbValids = []
         

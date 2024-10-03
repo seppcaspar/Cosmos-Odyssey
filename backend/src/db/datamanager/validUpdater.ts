@@ -1,9 +1,7 @@
 import { dbValidUntil, db } from "../../db/schema"
 import { validList } from "./dbValidList"
-import { UpdateThing } from "./updater"
 import { eq } from "drizzle-orm"
 import { Validator } from "./validator"
-import { getnewdata } from "./providerImport"
 import { dbDropper } from "./dbDropper"
 import { dbProvUpdater } from "./dbProvUpdater"
 import { dbFetch } from "./dbFetch"
@@ -22,8 +20,10 @@ export const validUpdater = async () => {
         const newValidUntil = data.validUntil
         let field = {ValidUntil: newValidUntil}
         
+        //checks if the latest validUntil in database is still valid
         if (valid?.dbValidUntil != valid?.newValidUntil) {
 
+            //checks if it needs to add or update validUntil list
             if (dbValidList!.length == 15) {
                 await dbDropper()
                 await reservDropper()
@@ -36,6 +36,7 @@ export const validUpdater = async () => {
             await dbProvUpdater()
 
         }
+        //sends provider list
         return dbFetch()
 
 

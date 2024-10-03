@@ -44,15 +44,40 @@ function App() {
 
   const [providers, setProviders] = useState([]);
   const [listProviders, setListProviders] = useState([]);
-  const [filters, setFilters] = useState([]);
   const [valids, setValids] = useState([]);
   const [pricelists, setPricelists] = useState();
+
+  //stores all needed inital info
   const [megaList, setMegaList] = useState([]);
-  const [validID, setValidID] = useState();
+  /*
+  {
+    "validListes": [
+      {
+        "id": 1,
+        "ValidUntil": "2024-10-03T10:49:44.2735925Z"
+      }
+    ],
+    "allprovs": [
+      {
+        "id": 3,
+        "company": "SpaceX",
+        "price": 64496,
+        "flightStart": "2024-10-08T01:50:55.7240876Z",
+        "flightEnd": "2024-10-12T10:51:55.7240876Z",
+        "routeID": 1,
+        "validUntilID": 20
+      }
+    ]
+  }
+  */
+
   const [sign, setSign] = useState("");
   const [name, setName] = useState();
+
+  //for some reason react doesnt want to update if nothing changes
   const [sorter, setSorter] = useState("10");
 
+  //gets a new list on refresh
   useEffect(() => {
     fetch(API_URL + '/newdata').then(
       response => response.json()
@@ -71,12 +96,10 @@ function App() {
         for (var i = 0, len = data.validListes.length; i < len; i++) {
           var item = data.validListes[i];
           if (item.ValidUntil == valides[0]) {
-            setValidID(item.id)
             form.setValues({
               validUntilID: item.id
             })
             setListProviders(data.allprovs.filter(listProviders => listProviders.validUntilID == item.id))
-            setFilters(data.allprovs.filter(listProviders => listProviders.validUntilID == item.id))
             setProviders(data.allprovs.filter(listProviders => listProviders.validUntilID == item.id))
           }
         }
@@ -87,41 +110,7 @@ function App() {
 
   }, [])
 
-
-
-
-
-  const [testProviders, setTestProviders] = useState([
-    {
-      id: 12,
-      company: "fabbb",
-      price: "1000",
-      flightStart: "3:60",
-      flightEnd: "4:00",
-    },
-    {
-      id: 22,
-      company: "fabbb",
-      price: "2000",
-      flightStart: "3:60",
-      flightEnd: "4:00",
-    },
-    {
-      id: 32,
-      company: "fabbb",
-      price: "3000",
-      flightStart: "3:60",
-      flightEnd: "4:00",
-    },
-    {
-      id: 42,
-      company: "fabbb",
-      price: "4000",
-      flightStart: "3:60",
-      flightEnd: "4:00",
-    }
-  ]);
-
+  //routes dont change
   const [routes, setRoutes] = useState([
     {
       "id": 1,
@@ -210,7 +199,6 @@ function App() {
   ]
   );
   const [distance, setDistance] = useState('');
-  //const [fromValue, setFromValue] = useState('');
   const [fromValue, setFromValue] = useState('');
   const [toValue, setToValue] = useState();
   const [companyValue, setCompanyValue] = useState("");
@@ -241,6 +229,8 @@ function App() {
     );
     setProviders(updatedProviders);
   };
+
+  //gets "From" value and enables "To" options
   const handleFrom = (from) => {
     setSorter("0")
     setFromValue(from)
@@ -264,6 +254,7 @@ function App() {
 
   };
 
+  //filters providers list based on routeID
   const handleTo = async (to) => {
     setToFilter(to)
     setSorter("0")
@@ -315,6 +306,7 @@ function App() {
 
   }
 
+  //changes pricelists
   const handleValid = (valid) => {
     setSorter("0")
     handleTo("")
@@ -323,16 +315,13 @@ function App() {
     for (var i = 0, len = valids.length; i < len; i++) {
       var item = valids[i];
       if (item.ValidUntil == valid) {
-        setValidID(item.id)
         setListProviders(megaList.filter(listProviders => listProviders.validUntilID == item.id))
-        setFilters(megaList.filter(listProviders => listProviders.validUntilID == item.id))
         setProviders(megaList.filter(listProviders => listProviders.validUntilID == item.id))
         console.log(item.id)
       }
     }
-
-
   };
+
   const handleShowAll = () => {
     handleTo("")
     handleFrom("")
@@ -340,6 +329,8 @@ function App() {
     setSorter("0")
     setProviders(listProviders);
   };
+
+  //notifies if reservation failed
   const handleNotification = (data) => {
     if (data.status == "already exists")
       notifications.show({
@@ -402,6 +393,8 @@ function App() {
     setReservations(list)
 
   };
+
+
   const handleSort = (sort) => {
     try {
 
@@ -425,7 +418,7 @@ function App() {
       <Group justify='space-between' align='top' wrap='wrap'>
         <Flex mah={350} direction="column" align="flex-start">
           <Text size="50px" fw={500}>Cosmos Odyssey</Text>
-
+          {/*on sign in gets customer reservations and changes page*/}
           <form onSubmit={form.onSubmit(async (values) => {
             try {
               const response = await fetch(API_URL + "/getRes/" + values.firstName + "/" + values.lastName);
@@ -500,7 +493,7 @@ function App() {
       </Group>
       <Box maw={700} pb={50}>
 
-
+          {/*filter section */}
         <SimpleGrid cols={3} pb={10}>
           <Flex align="flex-end">
             <Button fullWidth onClick={() => handleShowAll()}>Show all</Button>
@@ -574,6 +567,7 @@ function App() {
 
 
       <Group justify='space-between'>
+        
         {/* visible providers list */}
         <ScrollArea h={500} w={700}>
           {providers.map(provider => (
