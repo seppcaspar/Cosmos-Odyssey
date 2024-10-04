@@ -1,0 +1,1 @@
+ALTER TABLE "providers" ALTER COLUMN "price" SET DATA TYPE double precision;

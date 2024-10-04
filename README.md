@@ -7,6 +7,9 @@
 - npm i
 - npm run dev
 
+
+
+
 # running backend
 
 ###

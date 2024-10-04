@@ -1,1 +1,0 @@
-ALTER TABLE `dbValidUntil` RENAME COLUMN `validUntil` TO `ValidUntil`;

@@ -16,6 +16,12 @@ app.use(cors({
 app.use(express.json()) // for parsing application/json
 app.use(express.urlencoded({ extended: true })) // for parsing application/x-www-form-urlencoded
 
+app.get("/json", async (req, res) => {
+    let url = "https://cosmos-odyssey.azurewebsites.net/api/v1.0/TravelPrices"
+    const response = await fetch(url)
+    const data = await response.json()
+    res.send(data)
+  })
 
 //makes a json that has last 15 pricelists and all providers within the pricelists
 app.get("/newdata", async (req, res) => {

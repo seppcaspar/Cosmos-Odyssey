@@ -1,54 +1,19 @@
 {
   "version": "7",
-  "dialect": "mysql",
+  "dialect": "postgresql",
   "entries": [
     {
       "idx": 0,
-      "version": "5",
-      "when": 1726398869791,
-      "tag": "0000_abnormal_bloodstrike",
+      "version": "7",
+      "when": 1728042657128,
+      "tag": "0000_striped_cerebro",
       "breakpoints": true
     },
     {
       "idx": 1,
-      "version": "5",
-      "when": 1726399909933,
-      "tag": "0001_ambiguous_blue_shield",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "5",
-      "when": 1726574199200,
-      "tag": "0002_thankful_drax",
-      "breakpoints": true
-    },
-    {
-      "idx": 3,
-      "version": "5",
-      "when": 1726575146365,
-      "tag": "0003_clever_zuras",
-      "breakpoints": true
-    },
-    {
-      "idx": 4,
-      "version": "5",
-      "when": 1726856342948,
-      "tag": "0004_talented_sentinel",
-      "breakpoints": true
-    },
-    {
-      "idx": 5,
-      "version": "5",
-      "when": 1727439056286,
-      "tag": "0005_parallel_norman_osborn",
-      "breakpoints": true
-    },
-    {
-      "idx": 6,
-      "version": "5",
-      "when": 1727439861655,
-      "tag": "0006_eminent_venom",
+      "version": "7",
+      "when": 1728043553146,
+      "tag": "0001_old_solo",
       "breakpoints": true
     }
   ]

@@ -1,1 +1,0 @@
-ALTER TABLE `routes` MODIFY COLUMN `distance` varchar(256);

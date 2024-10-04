@@ -21,7 +21,7 @@ export const dbReserveCheck = async (fields: any) => {
             if (includes == true) {
                 return "already exists"
             } else {
-                return await db.insert(reservations).values(fields).$returningId()
+                return await db.insert(reservations).values(fields).returning({ insertedId: reservations.id })
             }
         } else {
             return "outdated"

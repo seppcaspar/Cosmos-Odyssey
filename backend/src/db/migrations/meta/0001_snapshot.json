@@ -1,206 +1,130 @@
 {
-  "version": "5",
-  "dialect": "mysql",
-  "id": "03d519da-434f-4895-82cd-3c7b4aa4245e",
-  "prevId": "0febc78b-d397-44f3-8260-2288394375f6",
+  "id": "782cf001-51a1-4358-bb98-3bdd7d9b59e8",
+  "prevId": "b70bd9ad-41e9-446e-8568-99c3da83cada",
+  "version": "7",
+  "dialect": "postgresql",
   "tables": {
-    "dbValidUntil": {
+    "public.dbValidUntil": {
       "name": "dbValidUntil",
+      "schema": "",
       "columns": {
         "id": {
           "name": "id",
-          "type": "bigint",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": true
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
         },
         "ValidUntil": {
           "name": "ValidUntil",
           "type": "varchar(256)",
           "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
+          "notNull": false
         }
       },
       "indexes": {},
       "foreignKeys": {},
-      "compositePrimaryKeys": {
-        "dbValidUntil_id": {
-          "name": "dbValidUntil_id",
-          "columns": [
-            "id"
-          ]
-        }
-      },
+      "compositePrimaryKeys": {},
       "uniqueConstraints": {}
     },
-    "providers": {
+    "public.providers": {
       "name": "providers",
+      "schema": "",
       "columns": {
         "id": {
           "name": "id",
-          "type": "bigint",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": true
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
         },
         "company": {
           "name": "company",
           "type": "varchar(256)",
           "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
+          "notNull": false
         },
         "price": {
           "name": "price",
-          "type": "int",
+          "type": "double precision",
           "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
+          "notNull": false
         },
         "flightStart": {
           "name": "flightStart",
           "type": "varchar(256)",
           "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
+          "notNull": false
         },
         "flightEnd": {
           "name": "flightEnd",
           "type": "varchar(256)",
           "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
+          "notNull": false
         },
         "routeID": {
           "name": "routeID",
           "type": "bigint",
           "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
+          "notNull": false
         },
         "validUntilID": {
           "name": "validUntilID",
           "type": "bigint",
           "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
+          "notNull": false
         }
       },
       "indexes": {},
-      "foreignKeys": {
-        "providers_routeID_routes_id_fk": {
-          "name": "providers_routeID_routes_id_fk",
-          "tableFrom": "providers",
-          "tableTo": "routes",
-          "columnsFrom": [
-            "routeID"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
-        },
-        "providers_validUntilID_dbValidUntil_id_fk": {
-          "name": "providers_validUntilID_dbValidUntil_id_fk",
-          "tableFrom": "providers",
-          "tableTo": "dbValidUntil",
-          "columnsFrom": [
-            "validUntilID"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
-        }
-      },
-      "compositePrimaryKeys": {
-        "providers_id": {
-          "name": "providers_id",
-          "columns": [
-            "id"
-          ]
-        }
-      },
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
       "uniqueConstraints": {}
     },
-    "routes": {
-      "name": "routes",
+    "public.reservations": {
+      "name": "reservations",
+      "schema": "",
       "columns": {
         "id": {
           "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "providerID": {
+          "name": "providerID",
           "type": "bigint",
           "primaryKey": false,
-          "notNull": true,
-          "autoincrement": true
+          "notNull": false
         },
-        "from": {
-          "name": "from",
+        "firstName": {
+          "name": "firstName",
           "type": "varchar(256)",
           "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
+          "notNull": false
         },
-        "to": {
-          "name": "to",
+        "lastName": {
+          "name": "lastName",
           "type": "varchar(256)",
           "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "distance": {
-          "name": "distance",
-          "type": "int",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
+          "notNull": false
         },
         "validUntilID": {
           "name": "validUntilID",
           "type": "bigint",
           "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
+          "notNull": false
         }
       },
       "indexes": {},
-      "foreignKeys": {
-        "routes_validUntilID_dbValidUntil_id_fk": {
-          "name": "routes_validUntilID_dbValidUntil_id_fk",
-          "tableFrom": "routes",
-          "tableTo": "dbValidUntil",
-          "columnsFrom": [
-            "validUntilID"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
-        }
-      },
-      "compositePrimaryKeys": {
-        "routes_id": {
-          "name": "routes_id",
-          "columns": [
-            "id"
-          ]
-        }
-      },
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
       "uniqueConstraints": {}
     }
   },
+  "enums": {},
+  "schemas": {},
+  "sequences": {},
   "_meta": {
+    "columns": {},
     "schemas": {},
-    "tables": {},
-    "columns": {
-      "\"dbValidUntil\".\"validUntil\"": "\"dbValidUntil\".\"ValidUntil\""
-    }
-  },
-  "internal": {
-    "tables": {},
-    "indexes": {}
+    "tables": {}
   }
 }
