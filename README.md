@@ -1,6 +1,4 @@
 # Cosmos-Odyssey
 
-
-proovitöö Uptime.eu jaoks
-
-Suuremat osa projekti tegin pimesilmi, andsin endast parimat et projekti tööle saada õppides iga uue ülesande ja probleemiga midagi uut.
+## the very first attempt at making a fullstack project to the finish without any guidance other than google.
+the pdf file for instructions on how it should look like can be found in root directory
